@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Presensi Althera</title>
+  <style>
+    body {
+      text-align: center;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(to bottom, #0b1f4d, #1a3c8b);
+      color: white;
+    }
+
+    h1 {
+      margin-top: 20px;
+    }
+
+    #preview {
+      margin-top: 20px;
+      border-radius: 15px;
+      border: 3px solid white;
+    }
+
+    #counter {
+      font-size: 20px;
+      margin-top: 15px;
+      opacity: 0.9;
+    }
+
+    #result {
+      margin-top: 15px;
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .card {
+      margin: auto;
+      margin-top: 30px;
+      padding: 20px;
+      width: 300px;
+      border-radius: 20px;
+      background: rgba(255,255,255,0.1);
+      backdrop-filter: blur(10px);
+    }
+  </style>
+</head>
+
+<body>
+  <h1>✨ Presensi Althera ✨</h1>
+
+  <div class="card">
+    <video id="preview" width="250"></video>
+    <div id="result">Scan QR untuk absen</div>
+    <div id="counter">Jumlah hadir: 0</div>
+  </div>
+
+  <script src="https://rawgit.com/schmich/instascan-builds/master/instascan.min.js"></script>
+
+  <script>
+    let count = 0;
+
+    let scanner = new Instascan.Scanner({ video: document.getElementById('preview') });
+
+    scanner.addListener('scan', function (content) {
+      fetch("LINK_WEB_APP_LO?nama=" + content)
+      .then(res => res.text())
+      .then(data => {
+        document.getElementById("result").innerText = data;
+
+        // kalau sukses tambah counter
+        if (data.includes("Selamat datang")) {
+          count++;
+          document.getElementById("counter").innerText = "Jumlah hadir: " + count;
+        }
+      });
+    });
+
+    Instascan.Camera.getCameras().then(function (cameras) {
+      if (cameras.length > 0) {
+        scanner.start(cameras[0]);
+      } else {
+        alert('Kamera tidak ditemukan');
+      }
+    });
+  </script>
+</body>
+</html>
